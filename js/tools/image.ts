@@ -219,5 +219,80 @@ module bo.designerTools {
 				data: this.data, height: this.height, name: this.name, type: "imageTool", uniqueID: this.uniqueID, width: this.width, x: this.x, y: this.y,
 			};
 		}
+		
+		public getZplData(): string {
+			let GRFVal = function(nibble: string): string {
+				let nibbleMap = { 
+					"0" : "0000",
+					"1" : "0001",
+					"2" : "0010",
+					"3" : "0011",
+					"4" : "0100",
+					"5" : "0101",
+					"6" : "0110",
+					"7" : "0111",
+					"8" : "1000",
+					"9" : "1001",
+					"A" : "1010",
+					"B" : "1011",
+					"C" : "1100",
+					"D" : "1101",
+					"E" : "1110",
+					"F" : "1111",
+				};
+				
+				for (let key in nibbleMap) {
+					if (nibbleMap[key] == nibble) {
+						return key;
+					}
+				}
+				
+				return "";
+			}
+			
+			let imgData = "";
+			let bytesPerLine = Math.ceil(this.width / 8);
+			console.log(bytesPerLine);
+			console.log(this.width);
+			console.log(bytesPerLine);
+			for (let y = 0; y < this.height; y++) {
+				let nibble = "";
+				let bytes = 0;
+				for (let x = 0; x < this.width; x++) {
+					let point = 4 * (this.width * y + x);
+					if (this.data[point+1] == 0) {
+						nibble += "1";
+					}
+					else nibble += "0";
+					
+					if (nibble.length > 7) {
+						imgData += GRFVal(nibble.substring(0, 4)) + GRFVal(nibble.substring(4, 8));
+						nibble = "";
+						bytes++;
+					}
+				}
+				
+				if (nibble.length > 0) {
+					while (nibble.length < 8) nibble += "0";
+					imgData += GRFVal(nibble.substring(0, 4)) + GRFVal(nibble.substring(4, 8));
+					nibble = "";
+					bytes++;
+				}
+				
+				while (bytes < bytesPerLine) {
+					imgData += GRFVal("0000") + GRFVal("0000");
+					bytes++;
+				}
+				
+				imgData += "\n";
+			}
+			
+			return "~DGIMG" + this.uniqueID + "," + bytesPerLine * this.height + "," + bytesPerLine + "," + imgData;
+		}
+		
+		public toZpl(labelx: number, labely: number, labelwidth: number, labelheight: number): string {
+			return "^FO" + (this.x - labelx) + "," + (this.y - labely) + "^XGR:IMG" + this.uniqueID + ",1,1^FS";
+		}
+
 	}
 }

@@ -1,6 +1,3 @@
-interface HTMLCanvasElement {
-	relativeMouse(event: any): bo.helpers.Point;
-}
 interface Window {
 	CanvasRenderingContext2D: any;
 	saveAs(file: File);
@@ -10,29 +7,25 @@ interface CanvasRenderingContext2D {
 	dashedStroke(x: number, y: number, x2: number, y2: number, dashArray: Array<number>);
 }
 
+
 module bo {
 	import Tool = bo.designerTools.Tool;
 	import ToolFactory = bo.designerTools.ToolFactory;
 
-	// http://stackoverflow.com/a/5932203/697477
-	HTMLCanvasElement.prototype.relativeMouse = function (event) {
-		let totalOffsetX = 0;
-		let totalOffsetY = 0;
-		let canvasX = 0;
-		let canvasY = 0;
-		let currentElement = this;
+	class ZplBuffer {
+		public data: string;
+		public zpl: string;
 
-		do {
-			totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
-			totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+		constructor(indata: string, inzpl: string) {
+			this.data = indata;
+			this.zpl  = inzpl;
 		}
-		while (currentElement = currentElement.offsetParent);
-
-		canvasX = event.clientX - totalOffsetX;
-		canvasY = event.clientY - totalOffsetY;
-
-		return new bo.helpers.Point(canvasX, canvasY);
-	};
+	}
+	// http://stackoverflow.com/a/18053642
+	function getCursorPosition(canvas, event) {
+	    var rect = canvas.getBoundingClientRect();
+		return new bo.helpers.Point(event.clientX - rect.left, event.clientY - rect.top);	
+	}
 
 	// From http://stackoverflow.com/a/4577326/697477
 	let CP = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
@@ -129,6 +122,31 @@ module bo {
 		}
 
 		get updating(): bo.helpers.ILiteEvent<Tool> { return this.onUpdating; }
+
+		public generateZpl(): ZplBuffer {
+			let data: string = "^XA\r\n" +
+					   "^CFd0,10,18\r\n" +
+					   "^PR12\r\n" +
+					   "^LRY\r\n" +
+					   "^MD30\r\n" +
+					   "^PW" + this.labelWidth + "\r\n" +
+					   "^LL" + this.labelHeight + "\r\n" +
+					   "^PON\r\n";
+		    let bufferData: string = "";
+			
+			for (let i: number = 0; i < this.currentLayer; i++) {
+				if (this.elements[i]) {
+					bufferData += this.elements[i].getZplData();
+					data += this.elements[i].toZpl(this.labelX, this.labelY, this.labelHeight, this.labelWidth);
+				}
+			}
+		
+			data += "^PQ1\r\n" +
+					"^XZ\r\n";
+					
+			console.log(bufferData + data);
+			return new ZplBuffer(bufferData, data);
+		}
 
 		public updateLabelSize(width: number, height: number): void {
 			this.labelWidth = width * this.dpi;
@@ -227,7 +245,7 @@ module bo {
 		}
 
 		private setActiveElement() {
-			let coordinates = this.canvas.relativeMouse(event);
+			let coordinates = getCursorPosition(this.canvas, event);
 			if (!this.activeElement || this.getHandle(coordinates) === 0) {
 				this.activeElement = null;
 				for (let i = this.currentLayer - 1; i >= 0; i--) {
@@ -404,7 +422,7 @@ module bo {
 			this.canvasElement.on("click", function () {
 				self.setActiveElement();
 			}).on("mousedown", function () {
-				self.dragStartPosition = self.canvas.relativeMouse(event);
+				self.dragStartPosition = getCursorPosition(self.canvas, event);
 				self.dragLastPosition = self.dragStartPosition;
 
 				if (self.newObjectController) {
@@ -433,7 +451,7 @@ module bo {
 				})
 				.on("mousemove", function () {
 					if (self.dragging && self.activeElement) {
-						let coords = self.canvas.relativeMouse(event);
+						let coords = getCursorPosition(self.canvas, event);
 						switch (self.dragAction) {
 							case 0:
 								self.move(new bo.helpers.Point(coords.x + self.dragElementOffset.x, coords.y + self.dragElementOffset.y));
@@ -447,7 +465,7 @@ module bo {
 					} else if (self.newObjectController != null) {
 						self.canvasElement.css({ cursor: "crosshair" });
 					} else if (self.activeElement) {
-						let coords = self.canvas.relativeMouse(event);
+						let coords = getCursorPosition(self.canvas, event);
 						// If cursor is within range of edge, show resize handles
 						let location = self.getHandle(coords);
 						let style = "default";

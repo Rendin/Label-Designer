@@ -93,5 +93,17 @@ module bo.designerTools {
 				height: this.height, name: this.name, type: "rectangleTool", width: this.width, x: this.x, y: this.y,
 			};
 		}
+
+		public getZplData(): string {
+			return "";
+		}
+
+		public toZpl(labelx: number, labely: number, labelwidth: number, labelheight: number): string {
+			if (this.width > this.height) {
+				return "^FO" + (this.x - labelx) + "," + (this.y - labely) + "^GB" + this.width + ",0," + this.height + "^FS";
+			}
+			
+			return "^FO" + (this.x - labelx) + "," + (this.y - labely) + "^GB" + "0," + this.height + "," + this.width + "^FS";
+		}
 	}
 }

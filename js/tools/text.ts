@@ -154,5 +154,14 @@ module bo.designerTools {
 				text: this.text, type: "textTool", width: this.width, x: this.x, y: this.y,
 			};
 		}
+
+		public getZplData(): string {
+			return "";
+		}
+
+		public toZpl(labelx: number, labely: number, labelwidth: number, labelheight: number): string {
+			return "^FO" + (this.x - labelx) + "," + (this.y - labely) + "^FD" + this.text + "^FS";
+		}
+		
 	}
 }

@@ -3,7 +3,7 @@ module bo {
 		private buttonView: JQuery;
 
 		constructor(public designer: LabelDesigner, private container: JQuery) {
-			this.buttonView = this.buildButtomView(container);
+			this.buttonView = this.buildButtonView(container);
 		}
 
 		public setTool(controller: bo.designerTools.ToolFactory) {
@@ -32,7 +32,7 @@ module bo {
 
 		public update(activeElement: any) { }
 
-		private buildButtomView(container: JQuery): JQuery {
+		private buildButtonView(container: JQuery): JQuery {
 			return $("<div></div>").appendTo(container);
 		}
 	}

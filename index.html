@@ -9,6 +9,8 @@
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
+    <script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css">
     <script language="javascript" type="text/javascript" src="js/designer.js"></script>
     <script language="javascript" type="text/javascript" src="js/designer_propertyInspector.js"></script>
     <script language="javascript" type="text/javascript" src="js/designer_toolbar.js"></script>
@@ -16,6 +18,7 @@
     <script language="javascript" type="text/javascript" src="js/designer_labelOutlineInspector.js"></script>
     <script language="javascript" type="text/javascript" src="js/labelControls/sizeControl.js"></script>
     <script language="javascript" type="text/javascript" src="js/labelControls/loadSaveControl.js"></script>
+    <script language="javascript" type="text/javascript" src="js/labelControls/generateZplControl.js"></script>
     <script language="javascript" type="text/javascript" src="js/labelControls/helper.js"></script>
     <script language="javascript" type="text/javascript" src="js/tools/rectangle.js"></script>
     <script language="javascript" type="text/javascript" src="js/tools/barcode.js"></script>
@@ -37,6 +40,7 @@
                 labelSizeInspector = new bo.LabelSizeInspector(designer, $("#toolbar"));
 				labelSizeInspector.addTool(new bo.helpers.LoadSaveControl(designer));
 				labelSizeInspector.addTool(new bo.helpers.SizeControl(designer));
+                labelSizeInspector.addTool(new bo.helpers.GenerateZplControl(designer));
 				
                 labelOutlineInspector = new bo.LabelOutlineInspector(designer, $("#outline"))
 

@@ -13,6 +13,8 @@ module bo.designerTools {
         drawActive(context): void;
         hitTest(coords): boolean;
         toSerializable(): any;
+        getZplData(): string;
+        toZpl(labelx: number, labely: number, labelwidth: number, labelheight: number): string;
     }
 
     export interface ToolFactory {

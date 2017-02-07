@@ -151,5 +151,13 @@ module bo.designerTools {
 				height: this.height, format: this.format, multiplier: this.multiplier, rotation: this.rotation
 			};
 		}
+
+		public getZplData(): string {
+			return "";
+		}
+
+		public toZpl(labelx: number, labely: number, labelwidth: number, labelheight: number): string {
+			return "^FO" + (this.x - labelx) + "," + (this.y - labely) + "^BY1^B3N,N," + this.height + "N,N^FD" + this.text + "^FS";
+		}
 	}
 }
